@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
@@ -22,16 +22,14 @@ const Admin = () => {
   };
   
   // Set the active tab based on URL
-  useState(() => {
+  useEffect(() => {
     const path = location.pathname.split('/').pop();
-    if (path) {
-      if (path === 'admin') {
-        setActiveTab('users');
-      } else {
-        setActiveTab(path);
-      }
+    if (path === 'admin' || path === '') {
+      setActiveTab('users');
+    } else if (path) {
+      setActiveTab(path);
     }
-  });
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-blue-gradient flex flex-col">

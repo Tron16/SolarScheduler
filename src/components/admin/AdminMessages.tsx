@@ -16,21 +16,12 @@ import {
   DialogDescription, 
   DialogFooter, 
   DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
+  DialogTitle
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Eye, Trash2 } from "lucide-react";
-
-interface ContactMessage {
-  id: string;
-  name: string;
-  email: string;
-  message: string;
-  created_at: string;
-  is_read: boolean;
-}
+import type { ContactMessage } from "@/types/database";
 
 const AdminMessages = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
@@ -53,10 +44,10 @@ const AdminMessages = () => {
       if (error) throw error;
       
       // Format the messages for display
-      const formattedMessages = data.map((msg) => ({
+      const formattedMessages = data ? data.map((msg) => ({
         ...msg,
         created_at: new Date(msg.created_at).toLocaleString(),
-      }));
+      })) : [];
       
       setMessages(formattedMessages);
       setFilteredMessages(formattedMessages);

@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Table, 
   TableBody, 
@@ -13,24 +11,12 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
-} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, UserPlus, Trash2, Search, Shield, ShieldOff } from "lucide-react";
+import { Search, Shield, ShieldOff } from "lucide-react";
+import type { Profile } from "@/types/database";
 
-interface UserWithProfile {
-  id: string;
-  email: string;
-  full_name: string;
-  created_at: string;
+interface UserWithProfile extends Profile {
   is_admin: boolean;
 }
 
@@ -39,7 +25,6 @@ const AdminUsers = () => {
   const [filteredUsers, setFilteredUsers] = useState<UserWithProfile[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
   const { user: currentUser } = useAuth();
 
@@ -64,18 +49,18 @@ const AdminUsers = () => {
       
       // Create a map of user IDs to admin status
       const adminMap = new Map();
-      adminRoles.forEach((role) => {
-        adminMap.set(role.user_id, true);
-      });
+      if (adminRoles) {
+        adminRoles.forEach((role) => {
+          adminMap.set(role.user_id, true);
+        });
+      }
       
       // Combine profiles with admin status
-      const usersWithRoles = profiles.map((profile) => ({
-        id: profile.id,
-        email: profile.email,
-        full_name: profile.full_name || 'No Name',
+      const usersWithRoles = profiles ? profiles.map((profile) => ({
+        ...profile,
         created_at: new Date(profile.created_at).toLocaleDateString(),
         is_admin: adminMap.has(profile.id)
-      }));
+      })) : [];
       
       setUsers(usersWithRoles);
       setFilteredUsers(usersWithRoles);
@@ -101,7 +86,7 @@ const AdminUsers = () => {
     if (searchQuery) {
       const filtered = users.filter(user => 
         user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+        (user.full_name && user.full_name.toLowerCase().includes(searchQuery.toLowerCase()))
       );
       setFilteredUsers(filtered);
     } else {
@@ -121,7 +106,19 @@ const AdminUsers = () => {
           .eq('role', 'admin');
         
         if (error) throw error;
+        
+        // Add user role
+        await supabase
+          .from('user_roles')
+          .insert({ user_id: userId, role: 'user' });
       } else {
+        // Remove user role if exists
+        await supabase
+          .from('user_roles')
+          .delete()
+          .eq('user_id', userId)
+          .eq('role', 'user');
+          
         // Add admin role
         const { error } = await supabase
           .from('user_roles')
@@ -197,7 +194,7 @@ const AdminUsers = () => {
             ) : (
               filteredUsers.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.full_name}</TableCell>
+                  <TableCell className="font-medium">{user.full_name || 'No Name'}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.created_at}</TableCell>
                   <TableCell>

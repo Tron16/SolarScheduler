@@ -23,47 +23,40 @@ import {
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Edit, Trash2, Database } from "lucide-react";
-import type { MLModel } from "@/types/database";
+import { PlusCircle, Edit, Trash2, Mail } from "lucide-react";
+import type { EmailTemplate } from "@/types/database";
 
-const AdminModels = () => {
-  const [models, setModels] = useState<MLModel[]>([]);
+const AdminEmails = () => {
+  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [currentModel, setCurrentModel] = useState<MLModel | null>(null);
+  const [currentTemplate, setCurrentTemplate] = useState<EmailTemplate | null>(null);
   
   // Form state
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [apiEndpoint, setApiEndpoint] = useState("");
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
   const [isActive, setIsActive] = useState(true);
   
   const { toast } = useToast();
 
-  // Function to fetch models
-  const fetchModels = async () => {
+  // Function to fetch templates
+  const fetchTemplates = async () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase
-        .from('ml_models')
+        .from('email_templates')
         .select('*')
         .order('name');
       
       if (error) throw error;
       
-      // Format the models for display
-      const formattedModels = data ? data.map((model) => ({
-        ...model,
-        created_at: new Date(model.created_at).toLocaleDateString(),
-        updated_at: new Date(model.updated_at).toLocaleDateString(),
-      })) : [];
-      
-      setModels(formattedModels);
+      setTemplates(data || []);
     } catch (error: any) {
-      console.error("Error fetching ML models:", error);
+      console.error("Error fetching email templates:", error);
       toast({
-        title: "Error fetching models",
+        title: "Error fetching templates",
         description: error.message,
         variant: "destructive"
       });
@@ -74,32 +67,32 @@ const AdminModels = () => {
 
   // Initial fetch
   useEffect(() => {
-    fetchModels();
+    fetchTemplates();
   }, []);
 
   // Reset form
   const resetForm = () => {
     setName("");
-    setDescription("");
-    setApiEndpoint("");
+    setSubject("");
+    setBody("");
     setIsActive(true);
-    setCurrentModel(null);
+    setCurrentTemplate(null);
     setIsEditMode(false);
   };
 
-  // Open add model modal
+  // Open add template modal
   const openAddModal = () => {
     resetForm();
     setIsModalOpen(true);
   };
 
-  // Open edit model modal
-  const openEditModal = (model: MLModel) => {
-    setCurrentModel(model);
-    setName(model.name);
-    setDescription(model.description || "");
-    setApiEndpoint(model.api_endpoint || "");
-    setIsActive(model.is_active);
+  // Open edit template modal
+  const openEditModal = (template: EmailTemplate) => {
+    setCurrentTemplate(template);
+    setName(template.name);
+    setSubject(template.subject);
+    setBody(template.body);
+    setIsActive(template.is_active);
     setIsEditMode(true);
     setIsModalOpen(true);
   };
@@ -109,60 +102,60 @@ const AdminModels = () => {
     e.preventDefault();
     
     try {
-      const modelData = {
+      const templateData = {
         name,
-        description,
-        api_endpoint: apiEndpoint,
+        subject,
+        body,
         is_active: isActive,
         updated_at: new Date().toISOString(),
       };
       
-      if (isEditMode && currentModel) {
-        // Update existing model
+      if (isEditMode && currentTemplate) {
+        // Update existing template
         const { error } = await supabase
-          .from('ml_models')
-          .update(modelData)
-          .eq('id', currentModel.id);
+          .from('email_templates')
+          .update(templateData)
+          .eq('id', currentTemplate.id);
         
         if (error) throw error;
         
         toast({
-          title: "Model updated",
-          description: "The ML model has been updated successfully",
+          title: "Template updated",
+          description: "The email template has been updated successfully",
         });
       } else {
-        // Add new model
+        // Add new template
         const { error } = await supabase
-          .from('ml_models')
-          .insert([modelData]);
+          .from('email_templates')
+          .insert([templateData]);
         
         if (error) throw error;
         
         toast({
-          title: "Model added",
-          description: "The ML model has been added successfully",
+          title: "Template added",
+          description: "The email template has been added successfully",
         });
       }
       
-      // Close modal and refresh models
+      // Close modal and refresh templates
       setIsModalOpen(false);
       resetForm();
-      fetchModels();
+      fetchTemplates();
     } catch (error: any) {
-      console.error("Error saving model:", error);
+      console.error("Error saving template:", error);
       toast({
-        title: "Error saving model",
+        title: "Error saving template",
         description: error.message,
         variant: "destructive"
       });
     }
   };
 
-  // Toggle model active status
-  const toggleModelStatus = async (id: string, currentStatus: boolean) => {
+  // Toggle template active status
+  const toggleTemplateStatus = async (id: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
-        .from('ml_models')
+        .from('email_templates')
         .update({ 
           is_active: !currentStatus,
           updated_at: new Date().toISOString(),
@@ -172,47 +165,47 @@ const AdminModels = () => {
       if (error) throw error;
       
       // Update local state
-      setModels(models.map(model => 
-        model.id === id ? { ...model, is_active: !currentStatus } : model
+      setTemplates(templates.map(template => 
+        template.id === id ? { ...template, is_active: !currentStatus } : template
       ));
       
       toast({
-        title: "Model status updated",
-        description: `Model is now ${!currentStatus ? 'active' : 'inactive'}`,
+        title: "Template status updated",
+        description: `Template is now ${!currentStatus ? 'active' : 'inactive'}`,
       });
     } catch (error: any) {
-      console.error("Error updating model status:", error);
+      console.error("Error updating template status:", error);
       toast({
-        title: "Error updating model",
+        title: "Error updating template",
         description: error.message,
         variant: "destructive"
       });
     }
   };
 
-  // Delete model
-  const deleteModel = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this model?")) return;
+  // Delete template
+  const deleteTemplate = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this template?")) return;
     
     try {
       const { error } = await supabase
-        .from('ml_models')
+        .from('email_templates')
         .delete()
         .eq('id', id);
       
       if (error) throw error;
       
       // Update local state
-      setModels(models.filter(model => model.id !== id));
+      setTemplates(templates.filter(template => template.id !== id));
       
       toast({
-        title: "Model deleted",
-        description: "The ML model has been deleted successfully",
+        title: "Template deleted",
+        description: "The email template has been deleted successfully",
       });
     } catch (error: any) {
-      console.error("Error deleting model:", error);
+      console.error("Error deleting template:", error);
       toast({
-        title: "Error deleting model",
+        title: "Error deleting template",
         description: error.message,
         variant: "destructive"
       });
@@ -222,10 +215,10 @@ const AdminModels = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">ML Models</h2>
+        <h2 className="text-xl font-semibold">Email Templates</h2>
         <Button onClick={openAddModal}>
           <PlusCircle className="mr-2 h-4 w-4" />
-          Add Model
+          Add Template
         </Button>
       </div>
 
@@ -234,75 +227,62 @@ const AdminModels = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>API Endpoint</TableHead>
+              <TableHead>Subject</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Last Updated</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10">
+                <TableCell colSpan={4} className="text-center py-10">
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
-                    <span className="ml-2">Loading models...</span>
+                    <span className="ml-2">Loading templates...</span>
                   </div>
                 </TableCell>
               </TableRow>
-            ) : models.length === 0 ? (
+            ) : templates.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10">
+                <TableCell colSpan={4} className="text-center py-10">
                   <div className="flex flex-col items-center justify-center space-y-3">
-                    <Database className="h-8 w-8 text-gray-400" />
-                    <div className="text-gray-500">No ML models configured yet</div>
+                    <Mail className="h-8 w-8 text-gray-400" />
+                    <div className="text-gray-500">No email templates configured yet</div>
                     <Button variant="outline" onClick={openAddModal}>
-                      Add Your First Model
+                      Add Your First Template
                     </Button>
                   </div>
                 </TableCell>
               </TableRow>
             ) : (
-              models.map((model) => (
-                <TableRow key={model.id}>
-                  <TableCell className="font-medium">
-                    <div>
-                      <div>{model.name}</div>
-                      {model.description && (
-                        <div className="text-sm text-gray-500 truncate max-w-md">
-                          {model.description}
-                        </div>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-mono text-sm truncate max-w-md">
-                    {model.api_endpoint}
-                  </TableCell>
+              templates.map((template) => (
+                <TableRow key={template.id}>
+                  <TableCell className="font-medium">{template.name}</TableCell>
+                  <TableCell>{template.subject}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       <Switch
-                        checked={model.is_active}
-                        onCheckedChange={() => toggleModelStatus(model.id, model.is_active)}
+                        checked={template.is_active}
+                        onCheckedChange={() => toggleTemplateStatus(template.id, template.is_active)}
                       />
-                      <span className={model.is_active ? "text-green-600" : "text-gray-500"}>
-                        {model.is_active ? "Active" : "Inactive"}
+                      <span className={template.is_active ? "text-green-600" : "text-gray-500"}>
+                        {template.is_active ? "Active" : "Inactive"}
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell>{model.updated_at}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end space-x-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => openEditModal(model)}
+                        onClick={() => openEditModal(template)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => deleteModel(model.id)}
+                        onClick={() => deleteTemplate(template.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -315,51 +295,55 @@ const AdminModels = () => {
         </Table>
       </div>
 
-      {/* Add/Edit Model Dialog */}
+      {/* Add/Edit Template Dialog */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{isEditMode ? "Edit ML Model" : "Add ML Model"}</DialogTitle>
+            <DialogTitle>{isEditMode ? "Edit Email Template" : "Add Email Template"}</DialogTitle>
             <DialogDescription>
               {isEditMode
-                ? "Update the details of your machine learning model"
-                : "Configure a new machine learning model for your application"}
+                ? "Update the details of your email template"
+                : "Configure a new email template for your application"}
             </DialogDescription>
           </DialogHeader>
           
           <form onSubmit={handleSubmit}>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Model Name</Label>
+                <Label htmlFor="name">Template Name</Label>
                 <Input
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="OpenAI GPT-4"
+                  placeholder="Welcome Email"
                   required
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="description">Description (optional)</Label>
-                <Textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Brief description of what this model does"
-                  rows={2}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="apiEndpoint">API Endpoint</Label>
+                <Label htmlFor="subject">Email Subject</Label>
                 <Input
-                  id="apiEndpoint"
-                  value={apiEndpoint}
-                  onChange={(e) => setApiEndpoint(e.target.value)}
-                  placeholder="https://api.example.com/v1/completion"
+                  id="subject"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Welcome to Solar Scheduler!"
                   required
                 />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="body">Email Body</Label>
+                <Textarea
+                  id="body"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  placeholder="Dear {{name}}, Welcome to Solar Scheduler..."
+                  rows={5}
+                  required
+                />
+                <p className="text-xs text-gray-500">
+                  You can use {{name}} as a placeholder for the recipient's name.
+                </p>
               </div>
               
               <div className="flex items-center space-x-2">
@@ -379,7 +363,7 @@ const AdminModels = () => {
                 Cancel
               </Button>
               <Button type="submit">
-                {isEditMode ? "Update Model" : "Add Model"}
+                {isEditMode ? "Update Template" : "Add Template"}
               </Button>
             </DialogFooter>
           </form>
@@ -389,4 +373,4 @@ const AdminModels = () => {
   );
 };
 
-export default AdminModels;
+export default AdminEmails;
