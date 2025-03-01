@@ -1,30 +1,49 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sun, Loader2 } from "lucide-react";
+import { Sun, Loader2, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 
-const Login = () => {
-  const [email, setEmail] = useState("");
+const ResetPassword = () => {
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const { login, isLoading } = useAuth();
+  const { resetPassword, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  useEffect(() => {
+    // Validate that we have a token in the URL
+    const hash = window.location.hash;
+    if (!hash || !hash.includes('type=recovery')) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+    
     try {
-      await login(email, password);
+      await resetPassword(password);
+      navigate('/login');
     } catch (error: any) {
-      console.error("Login failed:", error);
-      setError(error.message || "Invalid email or password");
+      console.error("Password reset failed:", error);
+      setError(error.message || "An error occurred. Please try again.");
     }
   };
 
@@ -52,38 +71,33 @@ const Login = () => {
                 ></motion.div>
                 <Sun className="w-full h-full text-yellow-400 absolute inset-0 animate-spin-slow" />
               </div>
-              <CardTitle className="text-3xl font-light text-center">Solar Scheduler</CardTitle>
-              <CardDescription className="text-center">Enter your credentials to access your account</CardDescription>
+              <CardTitle className="text-3xl font-light text-center">Create New Password</CardTitle>
+              <CardDescription className="text-center">Enter a new password for your account</CardDescription>
             </CardHeader>
 
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="input-field"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Link to="/forgot-password" className="text-sm text-solar-accent hover:underline">
-                      Forgot password?
-                    </Link>
-                  </div>
+                  <Label htmlFor="password">New Password</Label>
                   <Input
                     id="password"
                     type="password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    className="input-field"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     className="input-field"
                     required
                   />
@@ -105,17 +119,15 @@ const Login = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Signing in...
+                      Updating...
                     </>
                   ) : (
-                    "Sign In"
+                    <span className="flex items-center">
+                      <ShieldCheck className="w-4 h-4 mr-2" />
+                      Update Password
+                    </span>
                   )}
                 </Button>
-
-                <div className="text-sm text-center text-gray-500">
-                  Don't have an account?{" "}
-                  <Link to="/signup" className="text-solar-accent hover:underline">Sign up</Link>
-                </div>
               </CardFooter>
             </form>
           </Card>
@@ -125,4 +137,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ResetPassword;

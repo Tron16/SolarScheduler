@@ -2,18 +2,16 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Sun, Info, LogOut } from "lucide-react";
+import { Sun, Info, LogOut, Mail, Shield } from "lucide-react";
 import { motion } from "framer-motion";
-import { toast } from "@/hooks/use-toast";
 
 const NavigationBar = () => {
-  const { logout, user } = useAuth();
+  const { logout, user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
   };
 
   return (
@@ -34,41 +32,112 @@ const NavigationBar = () => {
           </Link>
           
           <nav className="flex items-center space-x-4">
-            <Link 
-              to="/" 
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === "/" 
-                  ? "text-solar-accent border-b-2 border-solar-accent" 
-                  : "text-gray-600 hover:text-solar-accent"
-              }`}
-            >
-              Dashboard
-            </Link>
-            
-            <Link 
-              to="/how-to" 
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === "/how-to" 
-                  ? "text-solar-accent border-b-2 border-solar-accent" 
-                  : "text-gray-600 hover:text-solar-accent"
-              }`}
-            >
-              <span className="flex items-center">
-                <Info className="w-4 h-4 mr-1" />
-                How To
-              </span>
-            </Link>
-            
-            <div className="border-l border-gray-200 h-6 mx-2"></div>
-            
-            <Button 
-              variant="ghost" 
-              className="flex items-center text-gray-600 hover:text-solar-accent"
-              onClick={handleLogout}
-            >
-              <LogOut className="w-4 h-4 mr-1" />
-              <span className="text-sm">Logout</span>
-            </Button>
+            {user && (
+              <>
+                <Link 
+                  to="/" 
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    location.pathname === "/" 
+                      ? "text-solar-accent border-b-2 border-solar-accent" 
+                      : "text-gray-600 hover:text-solar-accent"
+                  }`}
+                >
+                  Dashboard
+                </Link>
+                
+                <Link 
+                  to="/how-to" 
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    location.pathname === "/how-to" 
+                      ? "text-solar-accent border-b-2 border-solar-accent" 
+                      : "text-gray-600 hover:text-solar-accent"
+                  }`}
+                >
+                  <span className="flex items-center">
+                    <Info className="w-4 h-4 mr-1" />
+                    How To
+                  </span>
+                </Link>
+
+                <Link 
+                  to="/contact" 
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    location.pathname === "/contact" 
+                      ? "text-solar-accent border-b-2 border-solar-accent" 
+                      : "text-gray-600 hover:text-solar-accent"
+                  }`}
+                >
+                  <span className="flex items-center">
+                    <Mail className="w-4 h-4 mr-1" />
+                    Contact
+                  </span>
+                </Link>
+
+                {isAdmin && (
+                  <Link 
+                    to="/admin" 
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      location.pathname.startsWith("/admin") 
+                        ? "text-solar-accent border-b-2 border-solar-accent" 
+                        : "text-gray-600 hover:text-solar-accent"
+                    }`}
+                  >
+                    <span className="flex items-center">
+                      <Shield className="w-4 h-4 mr-1" />
+                      Admin
+                    </span>
+                  </Link>
+                )}
+                
+                <div className="border-l border-gray-200 h-6 mx-2"></div>
+                
+                <Button 
+                  variant="ghost" 
+                  className="flex items-center text-gray-600 hover:text-solar-accent"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="w-4 h-4 mr-1" />
+                  <span className="text-sm">Logout</span>
+                </Button>
+              </>
+            )}
+
+            {!user && (
+              <>
+                <Link 
+                  to="/contact" 
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    location.pathname === "/contact" 
+                      ? "text-solar-accent border-b-2 border-solar-accent" 
+                      : "text-gray-600 hover:text-solar-accent"
+                  }`}
+                >
+                  <span className="flex items-center">
+                    <Mail className="w-4 h-4 mr-1" />
+                    Contact
+                  </span>
+                </Link>
+                
+                <Link 
+                  to="/login" 
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    location.pathname === "/login" 
+                      ? "text-solar-accent border-b-2 border-solar-accent" 
+                      : "text-gray-600 hover:text-solar-accent"
+                  }`}
+                >
+                  Login
+                </Link>
+                
+                <Button 
+                  variant="default" 
+                  className="glass-button"
+                  onClick={() => navigate('/signup')}
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
           </nav>
         </div>
       </div>

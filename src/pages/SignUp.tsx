@@ -6,25 +6,38 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sun, Loader2 } from "lucide-react";
+import { Sun, Loader2, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
-const Login = () => {
+const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
-  const { login, isLoading } = useAuth();
+  const { signUp, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+    
     try {
-      await login(email, password);
+      await signUp(email, password, fullName);
+      navigate('/login');
     } catch (error: any) {
-      console.error("Login failed:", error);
-      setError(error.message || "Invalid email or password");
+      console.error("Registration failed:", error);
+      setError(error.message || "An error occurred during registration");
     }
   };
 
@@ -52,12 +65,25 @@ const Login = () => {
                 ></motion.div>
                 <Sun className="w-full h-full text-yellow-400 absolute inset-0 animate-spin-slow" />
               </div>
-              <CardTitle className="text-3xl font-light text-center">Solar Scheduler</CardTitle>
-              <CardDescription className="text-center">Enter your credentials to access your account</CardDescription>
+              <CardTitle className="text-3xl font-light text-center">Create Account</CardTitle>
+              <CardDescription className="text-center">Enter your details to create your Solar Scheduler account</CardDescription>
             </CardHeader>
 
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleSignUp}>
               <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder="John Doe"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="input-field"
+                    required
+                  />
+                </div>
+                
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -72,18 +98,26 @@ const Login = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Link to="/forgot-password" className="text-sm text-solar-accent hover:underline">
-                      Forgot password?
-                    </Link>
-                  </div>
+                  <Label htmlFor="password">Password</Label>
                   <Input
                     id="password"
                     type="password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    className="input-field"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     className="input-field"
                     required
                   />
@@ -105,16 +139,18 @@ const Login = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Signing in...
+                      Creating account...
                     </>
                   ) : (
-                    "Sign In"
+                    "Create Account"
                   )}
                 </Button>
 
-                <div className="text-sm text-center text-gray-500">
-                  Don't have an account?{" "}
-                  <Link to="/signup" className="text-solar-accent hover:underline">Sign up</Link>
+                <div className="flex justify-center w-full space-x-2 text-sm text-gray-500">
+                  <Button variant="link" size="sm" className="p-0" onClick={() => navigate('/login')}>
+                    <ArrowLeft className="w-4 h-4 mr-1" />
+                    Back to Login
+                  </Button>
                 </div>
               </CardFooter>
             </form>
@@ -125,4 +161,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;
