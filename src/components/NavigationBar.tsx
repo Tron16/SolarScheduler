@@ -6,12 +6,12 @@ import { Sun, Info, LogOut, Mail, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 
 const NavigationBar = () => {
-  const { logout, user, isAdmin } = useAuth();
+  const { signOut, user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleLogout = () => {
-    logout();
+    signOut();
   };
 
   return (

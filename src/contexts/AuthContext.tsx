@@ -11,11 +11,13 @@ interface AuthContextType {
   profile: Profile | null;
   isLoading: boolean;
   isAdmin: boolean;
+  isAuthenticated: boolean;
   signUp: (email: string, password: string, fullName?: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updatePassword: (password: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -101,13 +103,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log("Signing up with:", { email, fullName });
       
-      // Fix: Use proper object structure for metadata
+      // Create an options object where we conditionally add full_name only if it's provided
+      const options: any = {
+        data: {}
+      };
+      
+      if (fullName) {
+        options.data.full_name = fullName;
+      }
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: fullName ? { full_name: fullName } : {}
-        }
+        options
       });
       
       console.log("Sign up response:", data);
@@ -174,7 +182,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const resetPassword = async (email: string) => {
+  const forgotPassword = async (email: string) => {
     try {
       setIsLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -195,6 +203,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const resetPassword = async (email: string) => {
+    return forgotPassword(email);
   };
 
   const updatePassword = async (password: string) => {
@@ -225,11 +237,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     profile,
     isLoading,
     isAdmin,
+    isAuthenticated: !!user,
     signUp,
     signIn,
     signOut,
     resetPassword,
     updatePassword,
+    forgotPassword,
   };
 
   return (

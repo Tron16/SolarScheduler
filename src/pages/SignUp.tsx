@@ -33,8 +33,9 @@ const SignUp = () => {
     }
     
     try {
-      // Only pass fullName if it's not empty
-      await signUp(email, password, fullName || undefined);
+      // Only pass the fullName if it's not empty
+      const trimmedFullName = fullName.trim();
+      await signUp(email, password, trimmedFullName || undefined);
     } catch (error: any) {
       console.error("Registration failed:", error);
       setError(error.message || "An error occurred during registration");

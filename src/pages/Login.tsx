@@ -13,7 +13,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login, isLoading } = useAuth();
+  const { signIn, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -21,7 +21,7 @@ const Login = () => {
     setError("");
     
     try {
-      await login(email, password);
+      await signIn(email, password);
     } catch (error: any) {
       console.error("Login failed:", error);
       setError(error.message || "Invalid email or password");
