@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,19 +12,16 @@ import { motion } from "framer-motion";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const { signIn, isLoading } = useAuth();
+  const { login, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    
     try {
-      await signIn(email, password);
-    } catch (error: any) {
+      await login(email, password);
+      navigate("/");
+    } catch (error) {
       console.error("Login failed:", error);
-      setError(error.message || "Invalid email or password");
     }
   };
 
@@ -74,9 +71,7 @@ const Login = () => {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password">Password</Label>
-                    <Link to="/forgot-password" className="text-sm text-solar-accent hover:underline">
-                      Forgot password?
-                    </Link>
+                    <a href="#" className="text-sm text-solar-accent hover:underline">Forgot password?</a>
                   </div>
                   <Input
                     id="password"
@@ -88,12 +83,6 @@ const Login = () => {
                     required
                   />
                 </div>
-                
-                {error && (
-                  <div className="text-sm text-red-500 p-2 bg-red-50 rounded">
-                    {error}
-                  </div>
-                )}
               </CardContent>
 
               <CardFooter className="flex flex-col space-y-4">
@@ -114,11 +103,20 @@ const Login = () => {
 
                 <div className="text-sm text-center text-gray-500">
                   Don't have an account?{" "}
-                  <Link to="/signup" className="text-solar-accent hover:underline">Sign up</Link>
+                  <a href="#" className="text-solar-accent hover:underline">Sign up</a>
                 </div>
               </CardFooter>
             </form>
           </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+          className="text-center mt-8 text-sm text-gray-500"
+        >
+          Test credentials: any email and password (minimum 6 characters)
         </motion.div>
       </div>
     </div>
