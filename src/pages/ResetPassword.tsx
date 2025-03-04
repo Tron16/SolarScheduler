@@ -13,7 +13,7 @@ const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const { resetPassword, isLoading } = useAuth();
+  const { updatePassword, isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const ResetPassword = () => {
     }
     
     try {
-      await resetPassword(password);
+      await updatePassword(password);
       navigate('/login');
     } catch (error: any) {
       console.error("Password reset failed:", error);

@@ -157,6 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       toast.error("Login failed", {
         description: error.message,
       });
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -200,6 +201,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       toast.error("Failed to send reset email", {
         description: error.message,
       });
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -226,6 +228,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       toast.error("Failed to update password", {
         description: error.message,
       });
+      throw error;
     } finally {
       setIsLoading(false);
     }
