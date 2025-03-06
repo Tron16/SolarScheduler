@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import HowTo from "./pages/HowTo";
 import NotFound from "./pages/NotFound";
+import ModelTraining from "./pages/ModelTraining";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => {
             <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
             <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/how-to" element={<ProtectedRoute><HowTo /></ProtectedRoute>} />
+            <Route path="/model-training" element={<ProtectedRoute><ModelTraining /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -2,7 +2,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Sun, Info, LogOut } from "lucide-react";
+import { Sun, Info, LogOut, Brain } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 
@@ -43,6 +43,20 @@ const NavigationBar = () => {
               }`}
             >
               Dashboard
+            </Link>
+            
+            <Link 
+              to="/model-training" 
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                location.pathname === "/model-training" 
+                  ? "text-solar-accent border-b-2 border-solar-accent" 
+                  : "text-gray-600 hover:text-solar-accent"
+              }`}
+            >
+              <span className="flex items-center">
+                <Brain className="w-4 h-4 mr-1" />
+                Train Model
+              </span>
             </Link>
             
             <Link 
