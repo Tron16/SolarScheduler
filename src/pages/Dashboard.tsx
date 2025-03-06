@@ -6,20 +6,147 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, Sun, LineChart } from "lucide-react";
+import { 
+  ArrowRight, 
+  Sun, 
+  LineChart, 
+  ChevronDown,
+  X,
+  Plus
+} from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+// Variable options with their possible values
+const variableOptions = [
+  "Drive Time",
+  "Tilt (Roof Pitch)",
+  "Azimuth (Roof Orientation)",
+  "Panel Quantity",
+  "System Rating (kW DC)",
+  "Inverter Manufacturer",
+  "Array Type",
+  "Squirrel Screen Installation",
+  "Consumption Monitoring",
+  "Truss vs. Rafter Construction",
+  "Reinforcements Requirement",
+  "Rough Electrical Inspection",
+  "Interconnection Type",
+  "Module Length",
+  "Module Width",
+  "Module Weight",
+  "Number of Arrays",
+  "Number of Circuits",
+  "Number of Reinforcements",
+  "Roof Type",
+  "Attachment Type",
+  "Portrait vs. Landscape Panel Orientation",
+  "Number of Stories",
+  "Install Season",
+  "Total Direct Time for Hourly Employees (Including Drive Time)",
+  "Total Number of Days on Site",
+  "Total Number of Hourly Employees on Site",
+  "Estimated Number of Salaried Employees on Site",
+  "Estimated Salary Hours",
+  "Estimated Total Direct Time",
+  "Estimated Total Number of People on Site",
+  "Weather Conditions",
+  "Additional Uncaptured Electrical Work",
+  "Trenching and Detached Buildings",
+  "Tightly Packed Roof System",
+  "New Construction Projects"
+];
+
+// Variables with predefined value options
+const variableValueOptions = {
+  "Inverter Manufacturer": ["SolarEdge", "Enphase", "SMA", "GoodWe"],
+  "Array Type": ["Roof Mount", "Ground Mount"],
+  "Squirrel Screen Installation": ["Yes", "No"],
+  "Interconnection Type": ["A1", "A3", "C2", "B2", "A2", "C*", "C3", "C1", "B*", "A*", "B1", "A4"],
+  "Roof Type": ["Asphalt Shingles", "Standing Seam Metal Roof", "Ag Metal", "EPDM (Flat Roof)", "Ground Mount", "Metal Shingles"],
+  "Attachment Type": ["Flashfoot 2", "Unknown", "S-5!", "Ejot", "Flashloc RM", "Ground Mount", "Metal Shingle Attachments", "RT Mini", "Flashview", "Hugs"],
+  "Portrait vs. Landscape Panel Orientation": ["Portrait", "Both", "Landscape"],
+  "Install Season": ["Spring", "Summer", "Fall", "Winter"],
+  "Number of Stories": ["0", "1", "2", "3"]
+};
+
+// Check if a variable has predefined options
+const hasValueOptions = (variable) => {
+  return variableValueOptions[variable] !== undefined;
+};
 
 const Dashboard = () => {
-  const [inputData, setInputData] = useState("");
-  const [prediction, setPrediction] = useState<string | null>(null);
+  const [selectedVariables, setSelectedVariables] = useState([]);
+  const [variableValues, setVariableValues] = useState({});
+  const [prediction, setPrediction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleAddVariable = (variable) => {
+    if (!selectedVariables.includes(variable)) {
+      const newSelectedVariables = [...selectedVariables, variable];
+      setSelectedVariables(newSelectedVariables);
+      
+      // Initialize with default value if it has predefined options
+      if (hasValueOptions(variable)) {
+        setVariableValues(prev => ({
+          ...prev,
+          [variable]: variableValueOptions[variable][0]
+        }));
+      } else {
+        setVariableValues(prev => ({
+          ...prev,
+          [variable]: ""
+        }));
+      }
+    }
+  };
+
+  const handleRemoveVariable = (variable) => {
+    setSelectedVariables(selectedVariables.filter(v => v !== variable));
+    setVariableValues(prev => {
+      const newValues = { ...prev };
+      delete newValues[variable];
+      return newValues;
+    });
+  };
+
+  const handleValueChange = (variable, value) => {
+    setVariableValues(prev => ({
+      ...prev,
+      [variable]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!inputData.trim()) {
+    if (selectedVariables.length === 0) {
       toast({
-        title: "Input required",
-        description: "Please enter data for prediction",
+        title: "No variables selected",
+        description: "Please select at least one variable for prediction",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if all variables have values
+    const missingValues = selectedVariables.filter(variable => !variableValues[variable]);
+    if (missingValues.length > 0) {
+      toast({
+        title: "Missing values",
+        description: `Please provide values for: ${missingValues.join(", ")}`,
         variant: "destructive",
       });
       return;
@@ -36,11 +163,11 @@ const Dashboard = () => {
       const predictionValue = Math.floor(Math.random() * 100);
       const efficiency = Math.floor(Math.random() * 30) + 70; // 70-100%
       
-      setPrediction(`Based on your input "${inputData}", the predicted solar energy output is ${predictionValue} kWh/day with ${efficiency}% efficiency.`);
+      setPrediction(`Based on your selected variables, the predicted solar installation time is ${predictionValue} hours with ${efficiency}% certainty.`);
       
       toast({
         title: "Prediction complete",
-        description: "Your solar energy prediction is ready",
+        description: "Your solar installation time prediction is ready",
       });
     } catch (error) {
       toast({
@@ -68,6 +195,11 @@ const Dashboard = () => {
     show: { opacity: 1, y: 0 }
   };
 
+  // Filter out variables that have already been selected
+  const availableVariables = variableOptions.filter(
+    variable => !selectedVariables.includes(variable)
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       <NavigationBar />
@@ -80,37 +212,113 @@ const Dashboard = () => {
           className="max-w-4xl mx-auto"
         >
           <motion.div variants={item} className="mb-8">
-            <h1 className="heading-text mb-2">Solar Energy Predictor</h1>
-            <p className="subheading-text">
-              Enter location and system data to get solar energy production predictions
+            <h1 className="text-3xl font-bold mb-2">Solar Installation Time Predictor</h1>
+            <p className="text-lg text-gray-600">
+              Select variables to predict installation time for solar panels
             </p>
           </motion.div>
           
           <motion.div variants={item}>
-            <Card className="glass-panel">
+            <Card className="shadow-lg border-t-4 border-t-blue-500">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sun className="h-5 w-5 text-yellow-500" />
-                  Enter data for prediction
+                  Select Variables for Prediction
                 </CardTitle>
                 <CardDescription>
-                  Provide details about your solar panel system and location
+                  Choose the factors that affect solar installation time
                 </CardDescription>
               </CardHeader>
               
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <Input
-                    className="input-field"
-                    placeholder="Location, panel type, system size, etc."
-                    value={inputData}
-                    onChange={(e) => setInputData(e.target.value)}
-                  />
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="mb-4">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="flex items-center gap-2">
+                          <Plus className="h-4 w-4" />
+                          Add Variable
+                          <ChevronDown className="h-4 w-4 ml-1" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-72 max-h-80 overflow-y-auto">
+                        <DropdownMenuGroup>
+                          {availableVariables.length > 0 ? (
+                            availableVariables.map((variable) => (
+                              <DropdownMenuItem 
+                                key={variable}
+                                onClick={() => handleAddVariable(variable)}
+                              >
+                                {variable}
+                              </DropdownMenuItem>
+                            ))
+                          ) : (
+                            <DropdownMenuItem disabled>
+                              All variables added
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  
+                  {selectedVariables.length > 0 && (
+                    <div className="space-y-4 border rounded-md p-4 bg-gray-50">
+                      <h3 className="font-medium text-gray-700">Selected Variables:</h3>
+                      <div className="space-y-3">
+                        {selectedVariables.map((variable) => (
+                          <div key={variable} className="flex items-start gap-2 p-3 bg-white rounded-md shadow-sm">
+                            <div className="flex-1">
+                              <div className="flex justify-between">
+                                <p className="font-medium">{variable}</p>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleRemoveVariable(variable)}
+                                  className="h-6 w-6"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                              
+                              <div className="mt-2">
+                                {hasValueOptions(variable) ? (
+                                  <Select
+                                    value={variableValues[variable]}
+                                    onValueChange={(value) => handleValueChange(variable, value)}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder={`Select ${variable}`} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {variableValueOptions[variable].map((option) => (
+                                        <SelectItem key={option} value={option}>
+                                          {option}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                ) : (
+                                  <Input
+                                    placeholder={`Enter value for ${variable}`}
+                                    value={variableValues[variable]}
+                                    onChange={(e) => handleValueChange(variable, e.target.value)}
+                                    className="w-full"
+                                  />
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   
                   <Button 
                     type="submit" 
-                    className="glass-button"
-                    disabled={isLoading}
+                    className="w-full"
+                    disabled={isLoading || selectedVariables.length === 0}
                   >
                     {isLoading ? (
                       <div className="flex items-center">
@@ -122,7 +330,7 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="flex items-center">
-                        Submit to model
+                        Generate Prediction
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </div>
                     )}
@@ -139,10 +347,10 @@ const Dashboard = () => {
               transition={{ delay: 0.2 }}
               className="mt-8"
             >
-              <Card className="glass-panel border-l-4 border-l-solar-accent">
+              <Card className="shadow-lg border-l-4 border-l-green-500">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <LineChart className="h-5 w-5 text-solar-accent" />
+                    <LineChart className="h-5 w-5 text-green-500" />
                     Prediction Result
                   </CardTitle>
                 </CardHeader>
