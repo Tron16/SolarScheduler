@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Sun, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Login = () => {
@@ -41,15 +41,16 @@ const Login = () => {
         >
           <Card className="glass-panel">
             <CardHeader className="space-y-1 flex flex-col items-center">
-              <div className="w-40 h-auto relative mb-2">
-                <img 
-                  src="/lovable-uploads/498f44c5-20d5-491c-9b33-48c15965342c.png" 
-                  alt="Midwest Solar Power" 
-                  className="w-full h-auto"
-                />
+              <div className="w-20 h-20 relative mb-4">
+                <motion.div
+                  className="absolute inset-0 bg-yellow-300 rounded-full blur-lg opacity-40"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                ></motion.div>
+                <Sun className="w-full h-full text-yellow-400 absolute inset-0 animate-spin-slow" />
               </div>
-              <CardTitle className="text-3xl font-light text-center text-solar-accent">Midwest Solar Power</CardTitle>
-              <CardDescription className="text-center">Enter your credentials to access the Installation Time Predictor</CardDescription>
+              <CardTitle className="text-3xl font-light text-center">Solar Scheduler</CardTitle>
+              <CardDescription className="text-center">Enter your credentials to access your account</CardDescription>
             </CardHeader>
 
             <form onSubmit={handleLogin}>

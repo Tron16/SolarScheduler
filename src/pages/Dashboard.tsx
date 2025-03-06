@@ -212,21 +212,17 @@ const Dashboard = () => {
           className="max-w-4xl mx-auto"
         >
           <motion.div variants={item} className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Midwest Solar Power - Installation Time Predictor</h1>
+            <h1 className="text-3xl font-bold mb-2">Solar Installation Time Predictor</h1>
             <p className="text-lg text-gray-600">
               Select variables to predict installation time for solar panels
             </p>
           </motion.div>
           
           <motion.div variants={item}>
-            <Card className="shadow-lg border-t-4 border-t-solar-accent">
+            <Card className="shadow-lg border-t-4 border-t-blue-500">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <img 
-                    src="/lovable-uploads/498f44c5-20d5-491c-9b33-48c15965342c.png" 
-                    alt="Midwest Solar Power" 
-                    className="h-6"
-                  />
+                  <Sun className="h-5 w-5 text-yellow-500" />
                   Select Variables for Prediction
                 </CardTitle>
                 <CardDescription>
@@ -351,11 +347,11 @@ const Dashboard = () => {
               transition={{ delay: 0.2 }}
               className="mt-8"
             >
-              <Card className="shadow-lg border-l-4 border-l-solar-accent">
+              <Card className="shadow-lg border-l-4 border-l-green-500">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <LineChart className="h-5 w-5 text-solar-accent" />
-                    Midwest Solar Power - Prediction Result
+                    <LineChart className="h-5 w-5 text-green-500" />
+                    Prediction Result
                   </CardTitle>
                 </CardHeader>
                 
