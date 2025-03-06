@@ -2,9 +2,8 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Sun, Info, LogOut, Brain } from "lucide-react";
+import { Info, LogOut, Brain } from "lucide-react";
 import { motion } from "framer-motion";
-import { toast } from "@/hooks/use-toast";
 
 const NavigationBar = () => {
   const { logout, user } = useAuth();
@@ -26,11 +25,15 @@ const NavigationBar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-3">
-            <div className="relative">
-              <Sun className="w-8 h-8 text-yellow-400 animate-spin-slow" />
-              <div className="absolute inset-0 bg-yellow-300 rounded-full blur-sm opacity-30 animate-pulse"></div>
+            <img 
+              src="/lovable-uploads/498f44c5-20d5-491c-9b33-48c15965342c.png" 
+              alt="Midwest Solar Power" 
+              className="h-10"
+            />
+            <div className="flex flex-col items-start">
+              <span className="text-xl font-semibold text-solar-accent">Midwest Solar Power</span>
+              <span className="text-xs text-gray-500">Solar Installation Time Predictor</span>
             </div>
-            <span className="text-xl font-semibold text-gray-900">Solar Scheduler</span>
           </Link>
           
           <nav className="flex items-center space-x-4">

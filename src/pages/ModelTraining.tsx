@@ -1,19 +1,18 @@
-
 import { useState } from "react";
 import NavigationBar from "@/components/NavigationBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { 
   ArrowRight, 
-  Brain, 
+  Sun, 
+  LineChart, 
   ChevronDown,
   X,
-  Plus,
-  Save
+  Plus
 } from "lucide-react";
 import {
   Select,
@@ -91,7 +90,7 @@ const hasValueOptions = (variable) => {
 const ModelTraining = () => {
   const [selectedVariables, setSelectedVariables] = useState([]);
   const [variableValues, setVariableValues] = useState({});
-  const [actualInstallTime, setActualInstallTime] = useState("");
+  const [actualInstallationTime, setActualInstallationTime] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -136,7 +135,7 @@ const ModelTraining = () => {
     if (selectedVariables.length === 0) {
       toast({
         title: "No variables selected",
-        description: "Please select at least one variable for model training",
+        description: "Please select at least one variable for training",
         variant: "destructive",
       });
       return;
@@ -153,11 +152,10 @@ const ModelTraining = () => {
       return;
     }
 
-    // Check if actual installation time is provided
-    if (!actualInstallTime || actualInstallTime.trim() === '') {
+    if (!actualInstallationTime) {
       toast({
         title: "Missing actual installation time",
-        description: "Please provide the actual installation time to train the model",
+        description: "Please provide the actual installation time",
         variant: "destructive",
       });
       return;
@@ -165,21 +163,20 @@ const ModelTraining = () => {
 
     setIsLoading(true);
 
-    // Simulate API call for model training
+    // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       
       toast({
         title: "Training data submitted",
-        description: "Your data has been submitted to retrain the model",
-        variant: "success",
+        description: "Your data has been added to the training set",
+        variant: "default",
       });
-
-      // Clear form after successful submission
+      
+      // Reset form
       setSelectedVariables([]);
       setVariableValues({});
-      setActualInstallTime("");
-
+      setActualInstallationTime("");
     } catch (error) {
       toast({
         title: "Error submitting training data",
@@ -225,19 +222,19 @@ const ModelTraining = () => {
           <motion.div variants={item} className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Model Training</h1>
             <p className="text-lg text-gray-600">
-              Submit actual installation data to improve prediction accuracy
+              Select variables and provide the actual installation time to train the model
             </p>
           </motion.div>
           
           <motion.div variants={item}>
-            <Card className="shadow-lg border-t-4 border-t-purple-500">
+            <Card className="shadow-lg border-t-4 border-t-blue-500">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-purple-500" />
-                  Add Training Data
+                  <Sun className="h-5 w-5 text-yellow-500" />
+                  Training Data Input
                 </CardTitle>
                 <CardDescription>
-                  Enter variables and actual installation time to train the model
+                  Provide data to improve the accuracy of the prediction model
                 </CardDescription>
               </CardHeader>
               
@@ -326,25 +323,22 @@ const ModelTraining = () => {
                     </div>
                   )}
 
-                  <div className="border rounded-md p-4 bg-gray-50">
-                    <Label htmlFor="actualTime" className="font-medium text-gray-700 block mb-2">
-                      Actual Installation Time (hours)
-                    </Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="actualTime">Actual Installation Time (hours)</Label>
                     <Input
                       id="actualTime"
                       type="number"
-                      placeholder="Enter actual installation time in hours"
-                      value={actualInstallTime}
-                      onChange={(e) => setActualInstallTime(e.target.value)}
+                      placeholder="Enter actual installation time"
+                      value={actualInstallationTime}
+                      onChange={(e) => setActualInstallationTime(e.target.value)}
                       className="w-full"
-                      min="0"
-                      step="0.5"
+                      required
                     />
                   </div>
                   
                   <Button 
                     type="submit" 
-                    className="w-full bg-purple-600 hover:bg-purple-700"
+                    className="w-full"
                     disabled={isLoading || selectedVariables.length === 0}
                   >
                     {isLoading ? (
@@ -353,12 +347,12 @@ const ModelTraining = () => {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Processing
+                        Submitting Data
                       </div>
                     ) : (
                       <div className="flex items-center">
-                        <Save className="mr-2 h-4 w-4" />
                         Submit Training Data
+                        <ArrowRight className="ml-2 h-4 w-4" />
                       </div>
                     )}
                   </Button>
