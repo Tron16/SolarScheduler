@@ -1,4 +1,52 @@
-# Logs
+# Dependencies
+node_modules
+/.pnp
+.pnp.js
+yarn.lock
+package-lock.json
+
+# Testing
+/coverage
+.nyc_output
+
+# Production
+/build
+/dist
+dist-ssr
+*.local
+
+# Environment Variables
+.env
+.env.local
+.env.*
+!.env.example
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IDE - IntelliJ
+.idea
+*.iml
+*.iws
+*.ipr
+
+# IDE - WebStorm
+.idea/
+
+# Misc
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Debug logs
 logs
 *.log
 npm-debug.log*
@@ -7,18 +55,36 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# TypeScript
+*.tsbuildinfo
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Cache
+.cache
+.parcel-cache
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Local Netlify folder
+.netlify
+
+# Vercel
+.vercel
+
+# Next.js
+.next/
+out/
+
+# Temporary files
+*.swp
+*.swo
+*~
