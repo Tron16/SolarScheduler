@@ -1,0 +1,180 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 210 40% 2%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 40% 2%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 40% 2%;
+
+    --primary: 196 100% 47%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 210 40% 2%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 210 30% 40%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 210 40% 2%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 196 100% 47%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 196 100% 47%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 196 100% 47%;
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 196 100% 47%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 rounded-xl shadow-lg;
+  }
+  
+  .glass-button {
+    @apply bg-solar-accent/90 hover:bg-solar-accent text-white font-medium rounded-lg px-5 py-2.5 
+           transition-all duration-300 ease-in-out transform hover:scale-105 
+           hover:shadow-lg focus:ring-2 focus:ring-solar-highlight focus:outline-none
+           backdrop-blur-sm;
+  }
+  
+  .input-field {
+    @apply w-full p-3 rounded-lg border border-gray-200 bg-white/80 backdrop-blur-sm
+           transition duration-200 ease-in-out focus:ring-2 focus:ring-solar-accent
+           focus:border-transparent focus:outline-none;
+  }
+  
+  .page-transition {
+    @apply animate-fade-in;
+  }
+  
+  .heading-text {
+    @apply text-4xl font-light tracking-tight leading-none md:text-5xl lg:text-6xl;
+  }
+  
+  .subheading-text {
+    @apply text-lg md:text-xl text-gray-600 mb-8;
+  }
+  
+  .shimmer {
+    @apply relative overflow-hidden before:absolute before:inset-0 
+           before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent
+           before:animate-shimmer;
+  }
+}
+
+.sun-rays {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.sun-rays:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgb(255, 204, 0) 0%, rgba(255, 204, 0, 0) 70%);
+  animation: pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
