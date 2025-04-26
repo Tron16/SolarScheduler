@@ -127,7 +127,8 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",  # Frontend port
+    "http://localhost:8080", 
+    "http://172.26.46.33:8080/", # Frontend port
     "http://127.0.0.1:8080",
     "http://localhost:5173",  # Vite default port
     "http://127.0.0.1:5173",

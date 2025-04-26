@@ -107,6 +107,12 @@ class PredictionView(APIView):
                 else:
                     features_dict[feature] = self.default_values.get(feature, 0)
             
+            # Add debug logging
+            print("\n=== DEBUG: Features being sent to model ===")
+            print("Input features from request:", input_data.get('features', {}))
+            print("\nFinal features dict with defaults:", features_dict)
+            print("=======================================\n")
+            
             # Convert to DataFrame
             df = pd.DataFrame([features_dict])
             
