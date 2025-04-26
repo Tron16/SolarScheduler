@@ -1,0 +1,36 @@
+Unnamed: 0 : 138.00
+Project ID : 189.71
+Drive Time : 26.32
+Tilt : 25.59
+Tilt2 : 25.88
+Azimuth : 176.19
+Azimuth2 : 172.71
+Azimuth3 : 179.79
+Panel QTY : 21.37
+System Rating (kW DC) : 8.56
+Module Length : 72.42
+Module Width : 41.12
+Module Weight : 46.55
+# of Arrays : 1.79
+# of reinforcement : 1.49
+# of Stories : 1.38
+Total Direct Time for Project for Hourly Employees (Including Drive Time) : 46.04
+Total # of Days on Site : 1.96
+Total # Hourly Employees on Site : 3.60
+Estimated # of Salaried Employees on Site : 0.88
+Estimated Salary Hours : 12.38
+Estimated Total Direct Time : 58.43
+Estimated Total # of People on Site : 4.48
+
+Inverter Manufacturer : Enphase
+Array Type : Roof Mount
+Squirrel Screen : Yes
+Consumption Monitoring : No
+Truss / Rafter : Truss
+TreReinforcements : No
+Rough Electrical Inspection : No
+Interconnection Type : A1
+Roof Type : Asphalt Shingles
+Attachment Type : Flashfoot 2
+Portrait / Landscape : Portrait
+Install Season : Summer
